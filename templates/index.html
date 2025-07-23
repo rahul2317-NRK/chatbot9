@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Pixel AI - Real Estate Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            height: calc(100vh - 200px);
+        }
+        .message-bubble {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator {
+            animation: pulse 1.5s infinite;
+        }
+        .property-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .calculator-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .analysis-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div x-data="chatApp()" class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-2xl font-bold text-blue-600">Blue Pixel AI</h1>
+                        </div>
+                        <div class="hidden md:block ml-4">
+                            <p class="text-gray-600">Real Estate Investment Assistant</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-500" x-text="sessionId ? 'Session: ' + sessionId.substring(0, 8) + '...' : 'No Session'"></span>
+                        <button @click="createNewSession()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>New Session
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <!-- Chat Interface -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-xl shadow-lg">
+                        <!-- Chat Header -->
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">Chat with Blue Pixel AI</h2>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Online</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div class="chat-container overflow-y-auto p-6 space-y-4" id="chatContainer">
+                            <!-- Welcome Message -->
+                            <div class="flex items-start space-x-3 message-bubble">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-robot text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-blue-50 rounded-lg p-4">
+                                        <p class="text-gray-800">
+                                            Welcome to Blue Pixel AI! I'm your real estate investment assistant. I can help you with:
+                                        </p>
+                                        <ul class="mt-2 text-sm text-gray-600 space-y-1">
+                                            <li>• Property search and analysis</li>
+                                            <li>• Mortgage calculations</li>
+                                            <li>• Investment ROI analysis</li>
+                                            <li>• Market insights and trends</li>
+                                        </ul>
+                                        <p class="mt-2 text-gray-800">How can I assist you today?</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Messages -->
+                            <template x-for="message in messages" :key="message.id">
+                                <div class="flex items-start space-x-3 message-bubble" :class="message.type === 'user' ? 'justify-end' : ''">
+                                    <div x-show="message.type === 'assistant'" class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-robot text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 max-w-xs lg:max-w-md">
+                                        <div :class="message.type === 'user' ? 'bg-blue-600 text-white ml-auto' : 'bg-gray-100 text-gray-800'" class="rounded-lg p-4">
+                                            <p x-text="message.content"></p>
+                                            <div x-show="message.property_data" class="mt-3 pt-3 border-t border-gray-200">
+                                                <p class="text-xs text-gray-500 mb-2">Property Data Available</p>
+                                                <!-- Property data visualization would go here -->
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1" x-text="new Date(message.timestamp).toLocaleTimeString()"></p>
+                                    </div>
+                                    <div x-show="message.type === 'user'" class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Typing Indicator -->
+                            <div x-show="isTyping" class="flex items-start space-x-3 message-bubble">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-robot text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-gray-100 rounded-lg p-4">
+                                        <div class="typing-indicator flex space-x-1">
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="px-6 py-4 border-t border-gray-200">
+                            <form @submit.prevent="sendMessage()" class="flex space-x-4">
+                                <div class="flex-1">
+                                    <input 
+                                        x-model="currentMessage" 
+                                        type="text" 
+                                        placeholder="Ask about properties, mortgages, or investments..."
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        :disabled="isTyping"
+                                    >
+                                </div>
+                                <button 
+                                    type="submit" 
+                                    :disabled="!currentMessage.trim() || isTyping"
+                                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button @click="quickAction('property search')" class="w-full property-card text-white p-4 rounded-lg hover:opacity-90 transition-opacity">
+                                <i class="fas fa-search mb-2"></i>
+                                <p class="text-sm font-medium">Property Search</p>
+                            </button>
+                            <button @click="quickAction('mortgage calculator')" class="w-full calculator-card text-white p-4 rounded-lg hover:opacity-90 transition-opacity">
+                                <i class="fas fa-calculator mb-2"></i>
+                                <p class="text-sm font-medium">Mortgage Calculator</p>
+                            </button>
+                            <button @click="quickAction('market analysis')" class="w-full analysis-card text-white p-4 rounded-lg hover:opacity-90 transition-opacity">
+                                <i class="fas fa-chart-line mb-2"></i>
+                                <p class="text-sm font-medium">Market Analysis</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-3">
+                            <template x-for="activity in recentActivity" :key="activity.id">
+                                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-800" x-text="activity.action"></p>
+                                        <p class="text-xs text-gray-500" x-text="activity.time"></p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Session Stats</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Messages</span>
+                                <span class="text-sm font-medium" x-text="messages.length"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Tools Used</span>
+                                <span class="text-sm font-medium" x-text="toolsUsed.length"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Session Time</span>
+                                <span class="text-sm font-medium" x-text="sessionDuration"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function chatApp() {
+            return {
+                messages: [],
+                currentMessage: '',
+                isTyping: false,
+                sessionId: null,
+                userId: null,
+                recentActivity: [],
+                toolsUsed: [],
+                sessionStartTime: Date.now(),
+                
+                get sessionDuration() {
+                    const minutes = Math.floor((Date.now() - this.sessionStartTime) / 60000);
+                    return minutes > 0 ? `${minutes}m` : '<1m';
+                },
+
+                async init() {
+                    await this.createNewSession();
+                },
+
+                async createNewSession() {
+                    try {
+                        const response = await fetch('/api/chat-bot/sessions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.sessionId = data.session_id;
+                            this.userId = data.user_id;
+                            this.messages = [];
+                            this.recentActivity = [];
+                            this.toolsUsed = [];
+                            this.sessionStartTime = Date.now();
+                            
+                            this.addActivity('New session created');
+                        }
+                    } catch (error) {
+                        console.error('Error creating session:', error);
+                    }
+                },
+
+                async sendMessage() {
+                    if (!this.currentMessage.trim()) return;
+                    
+                    const messageText = this.currentMessage.trim();
+                    this.currentMessage = '';
+                    
+                    // Add user message
+                    this.addMessage('user', messageText);
+                    this.isTyping = true;
+                    
+                    try {
+                        const response = await fetch('/api/chat-bot/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                message: messageText,
+                                session_id: this.sessionId
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.addMessage('assistant', data.response, data.property_data);
+                            
+                            // Track tools used
+                            if (data.tools_used) {
+                                data.tools_used.forEach(tool => {
+                                    if (!this.toolsUsed.includes(tool)) {
+                                        this.toolsUsed.push(tool);
+                                    }
+                                });
+                            }
+                            
+                            this.addActivity(`AI responded using ${data.tools_used?.length || 0} tools`);
+                        } else {
+                            this.addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                        this.addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+                    } finally {
+                        this.isTyping = false;
+                        this.scrollToBottom();
+                    }
+                },
+
+                addMessage(type, content, propertyData = null) {
+                    this.messages.push({
+                        id: Date.now(),
+                        type: type,
+                        content: content,
+                        timestamp: new Date().toISOString(),
+                        property_data: propertyData
+                    });
+                    
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                    });
+                },
+
+                addActivity(action) {
+                    this.recentActivity.unshift({
+                        id: Date.now(),
+                        action: action,
+                        time: new Date().toLocaleTimeString()
+                    });
+                    
+                    // Keep only last 5 activities
+                    if (this.recentActivity.length > 5) {
+                        this.recentActivity = this.recentActivity.slice(0, 5);
+                    }
+                },
+
+                quickAction(action) {
+                    this.currentMessage = `I need help with ${action}`;
+                    this.sendMessage();
+                },
+
+                scrollToBottom() {
+                    const container = document.getElementById('chatContainer');
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

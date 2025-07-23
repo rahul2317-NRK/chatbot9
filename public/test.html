@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpine.js Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div x-data="testApp()" x-init="init()" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-4">Alpine.js Test</h1>
+        
+        <!-- Test Basic Reactivity -->
+        <div class="mb-4">
+            <p class="mb-2">Counter: <span x-text="counter" class="font-bold"></span></p>
+            <button @click="counter++" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Click Me
+            </button>
+        </div>
+        
+        <!-- Test Input Binding -->
+        <div class="mb-4">
+            <input 
+                x-model="message" 
+                type="text" 
+                placeholder="Type something..." 
+                class="w-full p-2 border rounded"
+            >
+            <p class="mt-2">You typed: <span x-text="message" class="font-bold"></span></p>
+        </div>
+        
+        <!-- Test Socket Connection -->
+        <div class="mb-4">
+            <p class="mb-2">Socket Status: 
+                <span x-text="socketConnected ? 'Connected' : 'Disconnected'" 
+                      :class="socketConnected ? 'text-green-600' : 'text-red-600'" 
+                      class="font-bold">
+                </span>
+            </p>
+            <button @click="testSocket()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Test Socket
+            </button>
+        </div>
+        
+        <!-- Debug Info -->
+        <div class="bg-gray-100 p-3 rounded">
+            <h3 class="font-bold mb-2">Debug Info:</h3>
+            <p class="text-sm">Alpine.js loaded: <span x-text="alpineLoaded"></span></p>
+            <p class="text-sm">Socket.io loaded: <span x-text="socketIoLoaded"></span></p>
+            <p class="text-sm">Init called: <span x-text="initCalled"></span></p>
+        </div>
+    </div>
+
+    <script>
+        console.log('🧪 Starting Alpine.js test...');
+        
+        function testApp() {
+            console.log('📦 testApp function called');
+            return {
+                counter: 0,
+                message: '',
+                socketConnected: false,
+                socket: null,
+                alpineLoaded: typeof Alpine !== 'undefined' ? 'Yes' : 'No',
+                socketIoLoaded: typeof io !== 'undefined' ? 'Yes' : 'No',
+                initCalled: false,
+                
+                init() {
+                    console.log('🚀 Init function called');
+                    this.initCalled = true;
+                    this.testSocket();
+                },
+                
+                testSocket() {
+                    console.log('🔌 Testing socket connection...');
+                    try {
+                        if (typeof io !== 'undefined') {
+                            this.socket = io();
+                            
+                            this.socket.on('connect', () => {
+                                console.log('✅ Socket connected!');
+                                this.socketConnected = true;
+                            });
+                            
+                            this.socket.on('disconnect', () => {
+                                console.log('❌ Socket disconnected');
+                                this.socketConnected = false;
+                            });
+                            
+                            this.socket.on('connect_error', (error) => {
+                                console.error('❌ Socket connection error:', error);
+                                this.socketConnected = false;
+                            });
+                        } else {
+                            console.error('❌ Socket.io not loaded');
+                        }
+                    } catch (error) {
+                        console.error('❌ Socket test error:', error);
+                    }
+                }
+            }
+        }
+        
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            console.error('🚨 Global JavaScript error:', event.error);
+        });
+        
+        console.log('📝 Test script loaded');
+    </script>
+</body>
+</html>
