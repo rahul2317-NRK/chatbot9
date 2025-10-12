@@ -1,3 +1,5 @@
+import config from './config.js';
+console.log('Gemini API Key Loaded:', config.gemini.apiKey);
 import Joi from 'joi';
 
 // Message Types
