@@ -1,4 +1,27 @@
+# Node modules
+node_modules/
+
+# Environment files
 .env
+
+# Keys and certificates
 *.key
 *.pem
-node_modules/
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+.bundle/
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor configs (optional)
+.vscode/
+.idea/
+
