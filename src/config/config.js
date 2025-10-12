@@ -15,7 +15,11 @@ const config = {
     maxTokens: parseInt(process.env.OPENAI_MAX_TOKENS) || 500,
     temperature: parseFloat(process.env.OPENAI_TEMPERATURE) || 0.7
   },
-
+gemini: {
+    apiKey: process.env.GEMINI_API_KEY,
+    model: process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+  },
+  
   // AWS Configuration
   aws: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -76,7 +80,7 @@ const config = {
 };
 
 // Validation
-const requiredEnvVars = ['OPENAI_API_KEY'];
+const requiredEnvVars = ['OPENAI_API_KEY', 'GEMINI_API_KEY'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
