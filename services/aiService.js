@@ -27,60 +27,51 @@ export class AIService {
   }
 
   async processMessage({ message, sessionId, userId }) {
-    const startTime = Date.now();
-    
-    try {
-      console.log('🤖 Gemini AI Service processing message:', message);
-      
-      // Step 1: Validate prompt relevance
-      const isRelevant = await this.validatePromptRelevance(message);
-      if (!isRelevant.isValid) {
-        return {
-          response: isRelevant.filteredContent,
-          sessionId,
-          timestamp: new Date().toISOString(),
-          toolsUsed: ['validatePromptRelevance'],
-          propertyData: null,
-          executionTime: Date.now() - startTime
-        };
-      }
+  const startTime = Date.now();
 
-      // Step 2: Determine which tools to use
-      const toolsToUse = this.determineRequiredTools(message);
-      const toolResults = {};
-      
-      // Step 3: Execute MCP tools
-      for (const toolName of toolsToUse) {
-        if (this.mcpTools[toolName]) {
-          try {
-            toolResults[toolName] = await this.mcpTools[toolName](message);
-            console.log(`✅ Tool ${toolName} executed successfully`);
-          } catch (error) {
-            console.error(`❌ Error executing tool ${toolName}:`, error);
-            toolResults[toolName] = { error: error.message };
-          }
-        }
-      }
+  try {
+    console.log('🤖 Gemini AI Service processing message:', message);
 
-      // Step 4: Generate AI response using Gemini
-      const aiResponse = await this.generateGeminiResponse(message, toolResults);
-
+    // Step 1: Validate prompt relevance
+    const isRelevant = await this.validatePromptRelevance(message);
+    if (!isRelevant.isValid) {
       return {
-        response: aiResponse,
+        response: isRelevant.filteredContent,
         sessionId,
         timestamp: new Date().toISOString(),
-        toolsUsed: toolsToUse,
-        propertyData: this.extractPropertyData(toolResults),
+        toolsUsed: ['validatePromptRelevance'],
+        propertyData: null,
         executionTime: Date.now() - startTime
       };
-
-    }  catch (error) {
-  console.error('❌ Gemini AI Service error:', error);
-  throw error;
-};
-
     }
+
+    // Step 2: Determine tools
+    const toolsToUse = this.determineRequiredTools(message);
+    const toolResults = {};
+
+    for (const toolName of toolsToUse) {
+      if (this.mcpTools[toolName]) {
+        toolResults[toolName] = await this.mcpTools[toolName](message);
+      }
+    }
+
+    // Step 3: Gemini response
+    const aiResponse = await this.generateGeminiResponse(message, toolResults);
+
+    return {
+      response: aiResponse,
+      sessionId,
+      timestamp: new Date().toISOString(),
+      toolsUsed: toolsToUse,
+      propertyData: this.extractPropertyData(toolResults),
+      executionTime: Date.now() - startTime
+    };
+
+  } catch (error) {
+    console.error('❌ Gemini AI Service error:', error);
+    throw error; // 🔥 NO FALLBACK
   }
+}
 
   async validatePromptRelevance(message) {
     const realEstateKeywords = [
