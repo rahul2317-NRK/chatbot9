@@ -173,7 +173,8 @@ app.get('/health', (req, res) => {
     service: 'Blue Pixel AI Chatbot (Node.js + Gemini)',
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
-    aiService: aiService.isInitialized ? 'Gemini Active' : 'Fallback Mode'
+    aiService: aiService.isInitialized ? 'Gemini Active' : 'Gemini Error'
+
   });
 });
 
