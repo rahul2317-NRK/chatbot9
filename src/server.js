@@ -1,4 +1,4 @@
-console.log("🔥 RUNNING SERVER.JS FILE 🔥");
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
@@ -41,9 +41,14 @@ class GeminiAIService {
     if (process.env.GEMINI_API_KEY) {
       try {
         this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({
-  model: process.env.GEMINI_MODEL
+      const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
+this.model = this.genAI.getGenerativeModel({
+  model: modelName
 });
+
+console.log('🤖 Gemini model loaded:', modelName);
+
         this.isInitialized = true;
         console.log('✅ Gemini AI service initialized successfully');
       } catch (error) {
