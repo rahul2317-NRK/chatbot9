@@ -56,7 +56,7 @@ class GeminiAIService {
     }
   }
 
-   async processMessage({ message, sessionId, userId }) {
+     async processMessage({ message, sessionId, userId }) {
     const startTime = Date.now();
 
     try {
@@ -100,8 +100,6 @@ Be conversational, practical, and focus on actionable insights for the Indian re
     }
   }
 
-  }
-}
 
 const app = express();
 const server = createServer(app);
