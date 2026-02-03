@@ -71,18 +71,11 @@ export class AIService {
         executionTime: Date.now() - startTime
       };
 
-    } catch (error) {
-      console.error('❌ Gemini AI Service error:', error);
-      
-      // Return fallback response for errors
-      return {
-        response: `I apologize, but I encountered an error processing your request about "${message}". Please try again or rephrase your question. I'm here to help with real estate queries!`,
-        sessionId,
-        timestamp: new Date().toISOString(),
-        toolsUsed: ['error-fallback'],
-        propertyData: null,
-        executionTime: Date.now() - startTime
-      };
+    }  catch (error) {
+  console.error('❌ Gemini AI Service error:', error);
+  throw error;
+};
+
     }
   }
 
