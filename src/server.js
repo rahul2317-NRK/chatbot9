@@ -100,10 +100,19 @@ Be conversational, practical, and focus on actionable insights for the Indian re
       };
 
     } catch (error) {
-      console.error('❌ Gemini error:', error);
-      throw new Error('Gemini AI failed. No fallback enabled.');
-    }
-  }
+  console.error('❌ GEMINI ERROR MESSAGE:', error?.message);
+  console.error('❌ GEMINI ERROR STACK:', error?.stack);
+
+  return {
+    response: "⚠️ Gemini API error occurred. Please try again in a moment.",
+    sessionId,
+    timestamp: new Date().toISOString(),
+    toolsUsed: ['gemini-ai'],
+    propertyData: null,
+    executionTime: Date.now() - startTime
+  };
+}
+
 
 }
 const app = express();
