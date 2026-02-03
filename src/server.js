@@ -93,102 +93,11 @@ Be conversational, practical, and focus on actionable insights for the Indian re
         propertyData: null,
         executionTime: Date.now() - startTime
       };
+       catch (error) {
+  console.error('❌ Gemini error:', error);
 
-    } catch (error) {
-      console.error('❌ Gemini error:', error);
-      
-      // Smart fallback based on message content
-      let fallbackResponse = '';
-      const lowerMessage = message.toLowerCase();
-      
-      if (lowerMessage.includes('market analysis') || lowerMessage.includes('market')) {
-        fallbackResponse = `📈 **Real Estate Market Analysis:**
-
-**Current Trends:**
-• Property appreciation: 8-12% annually in major cities
-• Best performing markets: Hyderabad, Pune, Bangalore
-• Interest rates: 8.5-9.5% for home loans
-• Rental yields: 2-4% in prime locations
-
-**Investment Hotspots:**
-• IT corridors and tech hubs
-• Areas near metro stations
-• Upcoming infrastructure projects
-• Tier-2 cities with growth potential
-
-**Key Factors to Consider:**
-• Location connectivity
-• Future development plans  
-• Supply vs demand ratio
-• Price trends over 2-3 years
-
-Would you like specific analysis for any particular city or area?`;
-      } else if (lowerMessage.includes('property') || lowerMessage.includes('house') || lowerMessage.includes('apartment')) {
-        fallbackResponse = `🏠 **Property Investment Guide:**
-
-**Popular Property Types:**
-• 2-3 BHK apartments: ₹40-80 lakhs
-• Villas: ₹80L-2Cr depending on location
-• Plots: Good for long-term appreciation
-
-**Top Cities for Investment:**
-• Hyderabad: Affordable with good growth
-• Pune: Strong IT sector presence  
-• Bangalore: Premium market with high demand
-• Chennai: Stable market with steady returns
-
-**Investment Tips:**
-• Research builder reputation
-• Check legal clearances
-• Consider resale value
-• Factor in maintenance costs
-
-What specific property information do you need?`;
-      } else if (lowerMessage.includes('mortgage') || lowerMessage.includes('loan') || lowerMessage.includes('emi')) {
-        fallbackResponse = `💰 **Mortgage & Loan Information:**
-
-**Current Interest Rates:**
-• SBI: 8.60% - 8.85%
-• HDFC: 8.75% - 9.00%
-• ICICI: 8.70% - 8.95%
-• Axis Bank: 8.80% - 9.05%
-
-**EMI Calculation Example:**
-• Loan Amount: ₹50 lakhs
-• Interest Rate: 8.75%
-• Tenure: 20 years
-• Monthly EMI: ~₹43,500
-
-**Tips for Better Rates:**
-• Maintain good credit score (750+)
-• Higher down payment (20%+)
-• Compare multiple banks
-• Consider floating vs fixed rates
-
-Need help calculating EMI for a specific amount?`;
-      } else {
-        fallbackResponse = `I'm Blue Pixel AI, your real estate investment assistant! 🏠
-
-I can help you with:
-• Property search and recommendations
-• Market analysis and trends
-• Mortgage calculations and EMI planning
-• Investment advice and ROI analysis
-• Location insights and price comparisons
-
-Please ask me about specific properties, locations, or real estate investments you're interested in!
-
-*Note: I'm currently running in fallback mode. For full AI responses, please ensure the Gemini API key is properly configured.*`;
-      }
-      
-      return {
-        response: fallbackResponse,
-        sessionId,
-        timestamp: new Date().toISOString(),
-        toolsUsed: ['smart-fallback'],
-        propertyData: null,
-        executionTime: Date.now() - startTime
-      };
+  throw new Error('Gemini AI failed. No fallback enabled.');
+    }
     }
   }
 }
