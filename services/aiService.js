@@ -163,7 +163,7 @@ User Question: ${message}`;
   console.error('❌ Gemini API error:', error);
   throw error;
 }
-
+  }
 
   formatToolResult(toolName, result) {
     switch (toolName) {
