@@ -262,7 +262,7 @@ io.on('connection', (socket) => {
       
       logger.info('AI response sent', { sessionId, toolsUsed: response.toolsUsed?.length || 0 });
 
-    }  catch (error) {
+    } catch (error) {
   logger.error('Error processing message:', error);
 
   io.to(data.sessionId).emit('ai_response', {
@@ -274,6 +274,7 @@ io.on('connection', (socket) => {
     executionTime: 0
   });
 }
+
 
   });
 
