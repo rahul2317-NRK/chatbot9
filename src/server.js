@@ -257,13 +257,19 @@ io.on('connection', (socket) => {
       
       logger.info('AI response sent', { sessionId, toolsUsed: response.toolsUsed?.length || 0 });
 
-    } catch (error) {
-      logger.error('Error processing message:', error);
-      socket.emit('error', {
-        message: 'Failed to process message',
-        error: error.message
-      });
-    }
+    }  catch (error) {
+  logger.error('Error processing message:', error);
+
+  io.to(data.sessionId).emit('ai_response', {
+    response: "⚠️ I’m having a temporary issue answering that. Please try again in a moment.",
+    sessionId: data.sessionId,
+    timestamp: new Date().toISOString(),
+    toolsUsed: ['gemini-ai'],
+    propertyData: null,
+    executionTime: 0
+  });
+}
+
   });
 
   // Handle typing indicators
