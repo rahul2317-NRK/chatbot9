@@ -56,12 +56,12 @@ class GeminiAIService {
     }
   }
 
-  async processMessage({ message, sessionId, userId }) {
+   async processMessage({ message, sessionId, userId }) {
     const startTime = Date.now();
-    
+
     try {
       console.log('🤖 Processing message with Gemini:', message);
-      
+
       if (!this.isInitialized || !this.model) {
         throw new Error('Gemini not initialized');
       }
@@ -82,9 +82,9 @@ Be conversational, practical, and focus on actionable insights for the Indian re
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const aiResponse = response.text();
-      
+
       console.log('✅ Gemini response generated');
-      
+
       return {
         response: aiResponse,
         sessionId,
@@ -93,12 +93,13 @@ Be conversational, practical, and focus on actionable insights for the Indian re
         propertyData: null,
         executionTime: Date.now() - startTime
       };
-       catch (error) {
-  console.error('❌ Gemini error:', error);
 
-  throw new Error('Gemini AI failed. No fallback enabled.');
+    } catch (error) {
+      console.error('❌ Gemini error:', error);
+      throw new Error('Gemini AI failed. No fallback enabled.');
     }
-    }
+  }
+
   }
 }
 
