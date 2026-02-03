@@ -68,10 +68,21 @@ export class AIService {
     };
 
   } catch (error) {
-    console.error('❌ Gemini AI Service error:', error);
-    throw error; // 🔥 NO FALLBACK
-  }
+  console.error('❌ Gemini error FULL:', {
+    message: error.message,
+    stack: error.stack
+  });
+
+  return {
+    response: "⚠️ Gemini is unavailable. Please try again shortly.",
+    sessionId,
+    timestamp: new Date().toISOString(),
+    toolsUsed: ['gemini-ai'],
+    propertyData: null,
+    executionTime: Date.now() - startTime
+  };
 }
+
 
   async validatePromptRelevance(message) {
     const realEstateKeywords = [
