@@ -166,26 +166,10 @@ User Question: ${message}`;
       return text;
 
     } catch (error) {
-      console.error('❌ Gemini API error:', error);
-      
-      // Fallback response with tool data
-      let response = `I understand you're asking about "${message}". `;
-      
-      if (Object.keys(toolResults).length > 0) {
-        response += "Based on the available data:\n\n";
-        Object.entries(toolResults).forEach(([tool, result]) => {
-          if (result && !result.error) {
-            response += `• ${this.formatToolResult(tool, result)}\n`;
-          }
-        });
-        response += "\nI'm here to help with more detailed analysis and recommendations!";
-      } else {
-        response += "I'm your real estate assistant, ready to help with property searches, market analysis, mortgage calculations, and investment advice. What specific aspect would you like to explore? 🏠";
-      }
-      
-      return response;
-    }
-  }
+  console.error('❌ Gemini API error:', error);
+  throw error;
+}
+
 
   formatToolResult(toolName, result) {
     switch (toolName) {
