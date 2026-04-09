@@ -1,4 +1,53 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+const express = require("express");
+const fetch = require("node-fetch");
+require("dotenv").config();
+
+const app = express();
+app.use(express.json());
+
+app.post("/chat", async (req, res) => {
+  try {
+    const userMessage = req.body.message;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: [
+          {
+            role: "system",
+            content: "You are Blue Pixel AI, a real estate investment assistant."
+          },
+          {
+            role: "user",
+            content: userMessage
+          }
+        ],
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      "Sorry, I couldn't respond.";
+
+    res.json({ reply });
+
+  } catch (error) {
+    console.error("Groq Error:", error);
+    res.json({
+      reply: "⚠️ AI service temporarily unavailable. Please try again."
+    });
+  }
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
 
 export class AIService {
   constructor() {
